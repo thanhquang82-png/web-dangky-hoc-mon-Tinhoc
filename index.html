@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang = "vi">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Web đăng ký học Tin học</title>
+	<link href="styles.css" rel="stylesheet" type = "text/css">
+</head>
+<body>
+	<h1 style="color:#1E3A8A">WEB ĐĂNG KÝ HỌC TIN HỌC</h1>
+	<h2 style="color:#0284C7">Nhập thông tin cá nhân</h2>
+	<form id="formDangKy">
+		<table>
+			<tr>
+				<td><label for="hoten">Họ tên:<span style="color:red">*</span></label></td>
+				<td><label for="ngaysinh">Ngày sinh:<span style="color:red">*</span></label></td>
+				<td><label for="gioitinh">Giới tính:<span style="color:red">*</span></label></td>	
+			</tr>
+			<tr>
+				<td><input id="hoten" type="text" name="hoten" placeholder="Nhập họ tên" maxlength="40" required style="width: 300px"></td>
+				<td><input id="ngaysinh" type="date" name="ngaysinh"></td>
+				<td>
+					<input id="gioitinh" type="radio" value="Nam" name="gioitinh1" checked>Nam
+					<input id="gioitinh" type="radio" value="Nu" name="gioitinh1">Nữ
+				</td>				
+			</tr>
+			<tr>
+				<td><label for="lop">Lớp:<span style="color:red">*</span></label></td>
+				<td><label for="sodt">Số điện thoại:<span style="color:red">*</span></label></td>	
+				<td></td>			
+			</tr>
+			<tr>
+				<td><input id="lop" type="text" name="lop" placeholder="Nhập lớp học" required></td>
+				<td><input id="sodt" type="text" name="sodt" placeholder="Số điện thoại đang sử dụng" required></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td><label for="diachi">Địa chỉ:<span style="color:red">*</span></label></td>
+				<td><label for="email">Địa chỉ email:<span style="color:red">*</span></label></td>
+				<td></td>
+			</tr>
+			<tr>				
+				<td><input id="diachi" type="text" name="diachi" placeholder="Nhập địa chỉ hiện tại" maxlength="40" required style="width: 300px"></td>
+				<td><input id="email" type="email" name="email" placeholder="Nhập địa chỉ email" maxlength="40" required style="width: 300px"></td>
+				<td></td>
+			</tr>
+			<tr height="20px"></tr>	
+			<tr>
+				<td>
+					<label for="monhoc">Môn học bạn muốn tham gia:<span style="color:red">*</span></label>								
+				<td style="text-align: left;">
+					<select id="monhoc" name="monhoc">
+						<option value="">-- Chọn môn học bạn quan tâm --</option>
+						<option value="python">Lập trình Python</option>
+						<option value="C++">Lập trình C++</option>
+						<option value="HTML">HTML cơ bản</option>
+						<option value="window form">Window Form C#</option>
+					</select>
+				</td>	
+			</tr>	
+			<tr height="20px"></tr>			
+			<tr>
+				<td colspan="3">
+				<label for="nghenghiep"><strong>Lí do bạn muốn tham gia và định hướng nghề trong tương lai:</strong></label>
+			</td></tr>
+			<tr>
+				<td colspan="3"><textarea id="nghenghiep" name="nghenghiep" rows="4" cols="66" 
+				placeholder="Nhập lí do chọn vào ô này" required></textarea>
+				</td>
+			</tr>
+		</table>	
+	</form>
+	<br>
+	<table>
+		<tr>
+			<td><button onclick="dangky()">Đăng ký</button></td>
+			<td></td><td></td> <!--Khoảng cách 2 nút lệnh -->
+			<td><button onclick="xuat()">Xuất file excel</button></td>
+		</tr>
+	</table>	
+	<h2 style="color:green">DANH SÁCH HỌC SINH ĐĂNG KÝ LỚP HỌC</h2>
+	<table id="tbl" border="1" cellspacing="0" cellpadding="2">
+		<!-- Dòng tiêu đề lớn phía trên bảng -->
+		<tr>
+			<td colspan="10" style="font-size: 18px; font-weight: bold; text-align: center; height: 40px; vertical-align: middle; background-color: #f3f4f6;">
+				DANH SÁCH HỌC SINH THAM GIA HỌC
+			</td>
+		</tr>
+		<tr>
+			<th>STT</th>
+			<th>Họ tên</th>
+			<th>Ngày sinh</th>
+			<th>Giới tính</th>
+			<th>Lớp</th>
+			<th>Số ĐT</th>
+			<th>Địa chỉ Email</th>
+			<th>Môn học tham gia</th>
+			<th>Ghi chú</th>
+			<th>Thao tác</th>
+		</tr>
+		<tbody id="body"></tbody>
+	</table>
+	<!--- Đổ dữ liệu vào bảng --->
+	<script>
+		var stt = 1; // Biến đếm số thứ tự
+        function dangky() {
+        	// 1. Sửa ID cho khớp chính xác với HTML
+            var ten = document.getElementById("hoten").value;
+            var ngsinh= document.getElementById("ngaysinh").value;
+
+            // 2. Lấy giá trị của Radio button đang được chọn
+			var gt = document.querySelector('input[name="gioitinh1"]:checked');
+			var gtinh = gt? gt.value: "";
+
+            var lop = document.getElementById("lop").value;
+            var sodt= document.getElementById("sodt").value;
+            var email= document.getElementById("email").value;
+            var monhoc= document.getElementById("monhoc").value;
+            var ghichu= document.getElementById("nghenghiep").value;
+            if (ten && ngsinh && gtinh && lop && sodt && email && monhoc) {
+                // 3. Thêm STT vào cột đầu tiên và sửa thẻ đóng </tr>
+				var row = '<tr>' +
+					'<td>' + stt++ + '</td>' +
+	                '<td>' + ten + '</td>' +
+	                '<td>' + ngsinh + '</td>' +
+	                '<td>' + gtinh + '</td>' +
+	                '<td>' + lop + '</td>' +
+	                '<td>' + sodt +'</td>' +
+	                '<td>' + email + '</td>' +
+	                '<td>' + monhoc + '</td>' +
+	                '<td>' + ghichu +'</td>' +
+	                //<!--- Tạo màu cho thùng rác xóa --!>
+	                '<td style="text-align: center;">' +
+						'<button type="button" onclick="xoaDong(this)" style="background-color: #fee2e2 !important; border: none; border-radius: 6px; padding: 6px 10px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;">' +
+							'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
+								'<polyline points="3 6 5 6 21 6"></polyline>' +
+								'<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>' +
+								'<line x1="10" y1="11" x2="10" y2="17"></line>' +
+								'<line x1="14" y1="11" x2="14" y2="17"></line>' +
+							'</svg>' +
+						'</button>' +
+					'</td>' +
+                '</tr>';
+               document.getElementById("body").innerHTML += row;
+
+				// Reset form sau khi nhập xong
+				document.getElementById("formDangKy").reset();
+			} else {
+				alert("Vui lòng nhập đầy đủ thông tin!");
+			}
+          }
+        // <!--- Xuất ra file excel --->
+        // Hàm xuất file Excel chuẩn (đã xóa cột Thao tác & căn đúng 9 cột)
+		function xuat() {
+			var tblClone = document.getElementById("tbl").cloneNode(true);
+
+			// 1. Chỉnh colspan tiêu đề lớn về 9 ô (tương ứng từ A đến I)
+			var titleTd = tblClone.querySelector("td[colspan]");
+			if (titleTd) {
+				titleTd.setAttribute("colspan", "9");
+			}
+
+			// 2. Lặp qua các dòng để loại bỏ cột Thao tác (cột cuối cùng)
+			var rows = tblClone.querySelectorAll("tr");
+			rows.forEach(function(row) {
+				if (!row.querySelector("td[colspan]") && row.cells.length > 0) {
+					row.deleteCell(-1);
+				}
+			});
+
+			// 3. Tiến hành tải file Excel
+			var html = '<meta charset="utf-8">' + tblClone.outerHTML;
+			var a = document.createElement("a");
+			a.href = 'data:application/vnd.ms-excel;charset=utf-8,\ufeff' + encodeURIComponent(html);
+			a.download = 'Danh_Sach_Hoc_Sinh.xls';
+			a.click();
+		}
+
+		// Hàm xóa dòng có kiểm tra quyền người tạo
+		function xoaDong(button) {
+			let row = button.parentElement.parentElement;
+			let nguoiTao = row.getAttribute("data-nguoi-tao");
+
+			if (nguoiTao !== nguoiDungHienTai) {
+				alert("Bạn không thể xóa dữ liệu này do người khác (" + nguoiTao + ") nhập!");
+				return;
+			}
+
+			if (confirm("Bạn có chắc chắn muốn xóa dòng do mình nhập không?")) {
+				row.remove();
+				capNhatSTT();
+			}
+		}
+
+		// Hàm cập nhật lại STT sau khi xóa
+		function capNhatSTT() {
+			let rows = document.querySelectorAll("#body tr");
+			rows.forEach((row, index) => {
+				row.cells[0].innerText = index + 1;
+			});
+			stt = rows.length + 1;
+		}
+    </script>
+</body>
+</html>

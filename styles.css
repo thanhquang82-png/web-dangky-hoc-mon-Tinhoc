@@ -1,0 +1,8 @@
+th {background-color: #38BDF8; color: white;
+}
+body {text-align: center;}
+table {margin-left: auto;
+		margin-right: auto;}
+label {display: block;		/*cho label chiếm chọn 1 dòng*/
+		text-align: left;
+	} 
