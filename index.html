@@ -102,104 +102,128 @@
 	</table>
 	<!--- Đổ dữ liệu vào bảng --->
 	<script>
-		var stt = 1; // Biến đếm số thứ tự
-        function dangky() {
-        	// 1. Sửa ID cho khớp chính xác với HTML
-            var ten = document.getElementById("hoten").value;
-            var ngsinh= document.getElementById("ngaysinh").value;
+		// Dòng 1-3: Chạy hàm hienThiDanhSach() ngay khi trang web tải xong
+		window.onload = function() {
+			hienThiDanhSach();
+		};
 
-            // 2. Lấy giá trị của Radio button đang được chọn
+		// Dòng 6-9: Lấy dữ liệu dạng chuỗi JSON từ bộ nhớ localStorage và đổi lại thành mảng
+		function layDanhSach() {
+			var ds = localStorage.getItem("danhSachHocSinh"); // Lấy chuỗi theo khóa "danhSachHocSinh"
+			return ds ? JSON.parse(ds) : [];                  // Nếu có dữ liệu thì giải mã JSON, ngược lại trả về mảng rỗng []
+		}
+
+		// Dòng 12-14: Chuyển mảng dữ liệu thành chuỗi JSON và lưu vào localStorage
+		function luuDanhSach(danhSach) {
+			localStorage.setItem("danhSachHocSinh", JSON.stringify(danhSach)); // Lưu mảng vào bộ nhớ
+		}
+
+		// Dòng 17-49: Xử lý sự kiện khi nhấn nút "Đăng ký"
+		function dangky() {
+			// Lấy giá trị từ các ô nhập dữ liệu trên form
+			var ten = document.getElementById("hoten").value;
+			var ngsinh = document.getElementById("ngaysinh").value;
 			var gt = document.querySelector('input[name="gioitinh1"]:checked');
-			var gtinh = gt? gt.value: "";
+			var gtinh = gt ? gt.value : "";
+			var lop = document.getElementById("lop").value;
+			var sodt = document.getElementById("sodt").value;
+			var email = document.getElementById("email").value;
+			var monhoc = document.getElementById("monhoc").value;
+			var ghichu = document.getElementById("nghenghiep").value;
 
-            var lop = document.getElementById("lop").value;
-            var sodt= document.getElementById("sodt").value;
-            var email= document.getElementById("email").value;
-            var monhoc= document.getElementById("monhoc").value;
-            var ghichu= document.getElementById("nghenghiep").value;
-            if (ten && ngsinh && gtinh && lop && sodt && email && monhoc) {
-                // 3. Thêm STT vào cột đầu tiên và sửa thẻ đóng </tr>
+			// Kiểm tra các trường bắt buộc đã được nhập hay chưa
+			if (ten && ngsinh && gtinh && lop && sodt && email && monhoc) {
+				// Đóng gói thông tin thành đối tượng JavaScript
+				var hocSinhMoi = {
+					ten: ten,
+					ngsinh: ngsinh,
+					gtinh: gtinh,
+					lop: lop,
+					sodt: sodt,
+					email: email,
+					monhoc: monhoc,
+					ghichu: ghichu
+				};
+
+				var danhSach = layDanhSach(); // 1. Lấy danh sách đang lưu trong máy
+				danhSach.push(hocSinhMoi);   // 2. Thêm học sinh mới vào danh sách
+				luuDanhSach(danhSach);       // 3. Lưu danh sách mới đè lại vào bộ nhớ
+
+				hienThiDanhSach();           // 4. Cập nhật lại giao diện bảng
+				
+				// 2. Xóa sạch các ô thông tin ở form trên để chuẩn bị nhập tiếp
+				document.getElementById("formDangKy").reset();
+			} else {
+				alert("Vui lòng nhập đầy đủ thông tin!"); // Báo lỗi nếu nhập thiếu
+			}
+		}
+
+		// Dòng 52-82: Lấy dữ liệu từ bộ nhớ và dựng các dòng <tr> lên bảng HTML
+		function hienThiDanhSach() {
+			var danhSach = layDanhSach();             // Lấy danh sách từ localStorage
+			var tbody = document.getElementById("body");
+			tbody.innerHTML = "";                     // Xóa các dòng cũ trên bảng để tránh bị trùng lặp
+
+			// Lặp qua từng phần tử trong mảng danh sách
+			danhSach.forEach(function(item, index) {
 				var row = '<tr>' +
-					'<td>' + stt++ + '</td>' +
-	                '<td>' + ten + '</td>' +
-	                '<td>' + ngsinh + '</td>' +
-	                '<td>' + gtinh + '</td>' +
-	                '<td>' + lop + '</td>' +
-	                '<td>' + sodt +'</td>' +
-	                '<td>' + email + '</td>' +
-	                '<td>' + monhoc + '</td>' +
-	                '<td>' + ghichu +'</td>' +
-	                //<!--- Tạo màu cho thùng rác xóa --!>
-	                '<td style="text-align: center;">' +
-						'<button type="button" onclick="xoaDong(this)" style="background-color: #fee2e2 !important; border: none; border-radius: 6px; padding: 6px 10px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;">' +
+					'<td>' + (index + 1) + '</td>' +   // STT tự động dựa trên chỉ số index (+1)
+					'<td>' + item.ten + '</td>' +
+					'<td>' + item.ngsinh + '</td>' +
+					'<td>' + item.gtinh + '</td>' +
+					'<td>' + item.lop + '</td>' +
+					'<td>' + item.sodt + '</td>' +
+					'<td>' + item.email + '</td>' +
+					'<td>' + item.monhoc + '</td>' +
+					'<td>' + item.ghichu + '</td>' +
+					// Nút xóa gọi hàm xoaDong() kèm theo chỉ số vị trí index
+					'<td style="text-align: center;">' +
+						'<button type="button" onclick="xoaDong(' + index + ')" style="background-color: #fee2e2 !important; border: none; border-radius: 6px; padding: 6px 10px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;">' +
 							'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">' +
 								'<polyline points="3 6 5 6 21 6"></polyline>' +
-								'<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>' +
+								'<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2 2v2"></path>' +
 								'<line x1="10" y1="11" x2="10" y2="17"></line>' +
 								'<line x1="14" y1="11" x2="14" y2="17"></line>' +
 							'</svg>' +
 						'</button>' +
 					'</td>' +
-                '</tr>';
-               document.getElementById("body").innerHTML += row;
+				'</tr>';
+				tbody.innerHTML += row; // Đưa dòng mới tạo vào trong tbody
+			});
+		}
 
-				// Reset form sau khi nhập xong
-				document.getElementById("formDangKy").reset();
-			} else {
-				alert("Vui lòng nhập đầy đủ thông tin!");
+		// Dòng 85-92: Xóa 1 học sinh theo chỉ số index trong mảng và lưu lại bộ nhớ
+		function xoaDong(index) {
+			if (confirm("Bạn có chắc chắn muốn xóa dòng này không?")) {
+				var danhSach = layDanhSach(); // Lấy danh sách hiện tại
+				danhSach.splice(index, 1);    // Loại bỏ 1 phần tử tại chỉ số index
+				luuDanhSach(danhSach);        // Cập nhật mảng đã xóa vào localStorage
+				hienThiDanhSach();            // Vẽ lại bảng mới
 			}
-          }
-        // <!--- Xuất ra file excel --->
-        // Hàm xuất file Excel chuẩn (đã xóa cột Thao tác & căn đúng 9 cột)
-		function xuat() {
-			var tblClone = document.getElementById("tbl").cloneNode(true);
+		}
 
-			// 1. Chỉnh colspan tiêu đề lớn về 9 ô (tương ứng từ A đến I)
+		// Dòng 95-113: Xuất danh sách bảng ra file Excel (.xls)
+		function xuat() {
+			var tblClone = document.getElementById("tbl").cloneNode(true); // Nhân bản bảng HTML
 			var titleTd = tblClone.querySelector("td[colspan]");
 			if (titleTd) {
-				titleTd.setAttribute("colspan", "9");
+				titleTd.setAttribute("colspan", "9"); // Căn lại tiêu đề ô lớn
 			}
 
-			// 2. Lặp qua các dòng để loại bỏ cột Thao tác (cột cuối cùng)
 			var rows = tblClone.querySelectorAll("tr");
 			rows.forEach(function(row) {
 				if (!row.querySelector("td[colspan]") && row.cells.length > 0) {
-					row.deleteCell(-1);
+					row.deleteCell(-1); // Xóa cột "Thao tác" (cột nút xóa) trước khi xuất file
 				}
 			});
 
-			// 3. Tiến hành tải file Excel
 			var html = '<meta charset="utf-8">' + tblClone.outerHTML;
 			var a = document.createElement("a");
 			a.href = 'data:application/vnd.ms-excel;charset=utf-8,\ufeff' + encodeURIComponent(html);
-			a.download = 'Danh_Sach_Hoc_Sinh.xls';
+			a.download = 'Danh_Sach_Hoc_Sinh.xls'; // Đặt tên file tải về
 			a.click();
 		}
-
-		// Hàm xóa dòng có kiểm tra quyền người tạo
-		function xoaDong(button) {
-			let row = button.parentElement.parentElement;
-			let nguoiTao = row.getAttribute("data-nguoi-tao");
-
-			if (nguoiTao !== nguoiDungHienTai) {
-				alert("Bạn không thể xóa dữ liệu này do người khác (" + nguoiTao + ") nhập!");
-				return;
-			}
-
-			if (confirm("Bạn có chắc chắn muốn xóa dòng do mình nhập không?")) {
-				row.remove();
-				capNhatSTT();
-			}
-		}
-
-		// Hàm cập nhật lại STT sau khi xóa
-		function capNhatSTT() {
-			let rows = document.querySelectorAll("#body tr");
-			rows.forEach((row, index) => {
-				row.cells[0].innerText = index + 1;
-			});
-			stt = rows.length + 1;
-		}
-    </script>
+	</script>
+		
 </body>
 </html>
