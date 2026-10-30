@@ -168,7 +168,8 @@
 			danhSach.forEach(function(item, index) {
 				var row = '<tr>' +
 					'<td>' + (index + 1) + '</td>' +   // STT tự động dựa trên chỉ số index (+1)
-					'<td>' + item.ten + '</td>' +
+					// [BỔ SUNG 2]: Thêm style="text-align: left;" để căn trái cột Họ tên
+					'<td style="text-align: left;">' + item.ten + '</td>' +
 					'<td>' + item.ngsinh + '</td>' +
 					'<td>' + item.gtinh + '</td>' +
 					'<td>' + item.lop + '</td>' +
